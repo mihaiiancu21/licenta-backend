@@ -1,2 +1,2 @@
 # licenta-backend
-Licenta Backend Django REST
+Proiect licenta Backend Django REST
