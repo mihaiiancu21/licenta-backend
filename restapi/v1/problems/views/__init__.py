@@ -1,0 +1,1 @@
+from restapi.v1.problems.views import ProblemViewSet
