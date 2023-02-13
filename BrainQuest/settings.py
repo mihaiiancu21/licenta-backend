@@ -28,6 +28,11 @@ ALLOWED_HOSTS = ['*']
 print(f'Allowed hosts: {ALLOWED_HOSTS}')
 
 # Application definition
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+)
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,11 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'restapi',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -117,7 +124,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -127,11 +134,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # -----------------------------------------
 # DJANGO REST FRAMEWORK SETTINGS
 # -----------------------------------------
-
-DEFAULT_RENDERER_CLASSES = (
-    'rest_framework.renderers.JSONRenderer',
-    'rest_framework.renderers.BrowsableAPIRenderer',
-)
+if DEBUG:
+    DEFAULT_RENDERER_CLASSES = (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
+else:  # disable the web browsable API in production
+    DEFAULT_RENDERER_CLASSES = (
+        'rest_framework.renderers.JSONRenderer',
+    )
 
 # CORS config
 CORS_ORIGIN_ALLOW_ALL = True
@@ -148,17 +159,22 @@ CORS_ALLOW_HEADERS = (
 # Security reason: store the csrf Cookie in cookie
 CSRF_USE_SESSIONS = False  # False then Angular can use it
 CSRF_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:5173/']
+
 print('CSRF trusted origins: %s' % CSRF_TRUSTED_ORIGINS)
 CSRF_COOKIE_DOMAIN = os.environ.get('DJANGO_COOKIE_DOMAIN', None)
 
+# Let Django manage the duration and refresh of a User session
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_HTTPONLY = False  # to avoid javascript to access session
+SESSION_COOKIE_AGE = 3600  # 1 hour
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #     'rest_framework.permissions.IsAdminUser'
-    # ),
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
 }
+
