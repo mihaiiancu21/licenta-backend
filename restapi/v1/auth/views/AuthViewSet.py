@@ -1,7 +1,10 @@
 import base64
 
 from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics, status
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -12,9 +15,18 @@ from restapi.v1.auth.serializers.AuthSerializer import LoginSerializer
 from restapi.v1.users.serializers.UserSerializer import UserSerializer
 
 
+@ensure_csrf_cookie
+def set_csrf_token(request):
+    """
+    This will be `/api/set-csrf-cookie/` on `urls.py`
+    """
+    return JsonResponse({"details": "CSRF cookie set"})
+
+
 class Login(generics.CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
+    authentication_classes = [SessionAuthentication]
 
     def create(self, request, *args, **kwargs):
         """

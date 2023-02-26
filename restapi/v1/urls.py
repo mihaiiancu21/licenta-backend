@@ -9,6 +9,7 @@ from restapi.v1.users import views as users_views
 auth_urlpatterns = [
     path(r'login/', auth_views.AuthViewSet.Login.as_view(), name="login"),
     path(r'logout/', auth_views.AuthViewSet.Logout.as_view(), name="logout"),
+    path(r'set-csrf/', auth_views.AuthViewSet.set_csrf_token, name='Set-CSRF'),
 ]
 
 users_urlpatterns = [
