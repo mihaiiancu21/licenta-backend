@@ -27,13 +27,6 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 print(f'Allowed hosts: {ALLOWED_HOSTS}')
 
-# Application definition
-CORS_ORIGIN_WHITELIST = (
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-)
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -156,10 +149,26 @@ CORS_ALLOW_HEADERS = (
     'authorization'
 )
 
+CORS_EXPOSE_HEADERS = (
+    "content-type",
+    "X-CSRFToken"
+)
+
 # Security reason: store the csrf Cookie in cookie
 CSRF_USE_SESSIONS = False  # False then Angular can use it
 CSRF_COOKIE_HTTPONLY = False
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1', 'http://localhost:5173/']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://localhost:5173'
+]
+
+# # Application definition
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://localhost:5173'
+)
 
 print('CSRF trusted origins: %s' % CSRF_TRUSTED_ORIGINS)
 CSRF_COOKIE_DOMAIN = os.environ.get('DJANGO_COOKIE_DOMAIN', None)
@@ -177,4 +186,3 @@ REST_FRAMEWORK = {
     'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
     'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
 }
-
