@@ -1,10 +1,24 @@
 from django.db import transaction
+from django.db.models import Q
 from rest_framework import generics, status
 from rest_framework.response import Response
 
 from restapi.models import Problem
 from restapi.v1.problems.serializers.ProblemSerializers import ProblemSerializer
 
+
+# class ProblemFilterView(generics.UpdateAPIView):
+#     """
+#     Get a list of problems by applying filters
+#     """
+#     queryset = Problem.objects.all()
+#     serializer_class = ProblemSerializer
+#
+#     def update(self, request, *args, **kwargs):
+#         queryset = self.get_queryset()
+#         serializer = self.get_serializer(queryset, many=True)
+#
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ProblemView(generics.ListCreateAPIView):
     """
@@ -21,6 +35,35 @@ class ProblemView(generics.ListCreateAPIView):
     serializer_class = ProblemSerializer
 
     def list(self, request, *args, **kwargs):
+        if request.query_params:
+            level_filters = []
+            topic_filter = []
+
+            if "level_filter" in request.query_params:
+                level_filters = request.query_params.get("level_filter").split(',')
+
+            if "topic_filter" in request.query_params:
+                topic_filter = request.query_params.get("topic_filter").split(',')
+
+            if level_filters and topic_filter:
+                filtered_problems = Problem.objects.filter(
+                    Q(difficulty_level__in=level_filters) & Q(topic_type__topic__in=topic_filter)
+                )
+
+            elif level_filters:
+                filtered_problems = Problem.objects.filter(
+                    Q(difficulty_level__in=level_filters)
+                )
+
+            elif topic_filter:
+                filtered_problems = Problem.objects.filter(
+                    Q(topic_type__topic__in=topic_filter)
+                )
+
+            serializer = self.get_serializer(filtered_problems, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
 
