@@ -14,12 +14,14 @@ auth_urlpatterns = [
 
 users_urlpatterns = [
     # users
-    path(r'', users_views.UserViewSet.UserListView.as_view(), name="list"),
+    path(r'', users_views.UserViewSet.UserListView.as_view(), name="list-users"),
+    path(r'profile/', users_views.UserViewSet.UserDetailsView.as_view(), name="get-users-profile"),
 ]
 
 topics_urlpatterns = [
     # topics
     path(r'', topics_views.TopicViewSet.TopicsListView.as_view(), name="list-topics"),
+    re_path(r'^(?P<pk>[0-9]+)/$', topics_views.TopicViewSet.TopicUpdateView.as_view(), name="get-topic"),
 ]
 
 problems_urlpatterns = [
@@ -30,8 +32,7 @@ problems_urlpatterns = [
 
 problemExamples_urlpatterns = [
     # problem examples
-    path(r'', problem_examples_views.ProblemExampleViewSet.ProblemExampleView
-         .as_view(), name="list"),
+    path(r'', problem_examples_views.ProblemExampleViewSet.ProblemExampleView.as_view(), name="list-problems"),
 ]
 
 urlpatterns = [
