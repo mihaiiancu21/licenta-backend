@@ -27,6 +27,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 print(f'Allowed hosts: {ALLOWED_HOSTS}')
 
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
+print(f'Frontend URL: {FRONTEND_URL}')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
