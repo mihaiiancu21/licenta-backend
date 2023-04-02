@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account activation</title>
+</head>
+<body>
+<p>Hello {{ user.first_name }},<br>
+    You are now registered on BrainQuest app.<br>
+    Please click on the following link to activate your account:<br>
+    <a href="{{ frontend_url }}/activate?validationtoken={{ token }}">BrainQuest</a>
+</p>
+<p>Happy Codding,<br>
+    BrainQuest Team</p>
+</body>
+</html>

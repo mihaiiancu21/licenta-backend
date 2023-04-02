@@ -1,6 +1,9 @@
 import base64
+import json
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.sessions.backends.db import SessionStore
 from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import generics, status
@@ -11,7 +14,7 @@ from rest_framework.response import Response
 
 from permissions import get_permission_class
 from restapi.utils.session_authentication import CsrfExemptSessionAuthentication
-from restapi.v1.auth.serializers.AuthSerializer import LoginSerializer
+from restapi.v1.auth.serializers.AuthSerializer import LoginSerializer, RegisterSerializer
 from restapi.v1.users.serializers.UserSerializer import UserSerializer
 
 
@@ -59,3 +62,39 @@ class Logout(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         logout(request)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class Register(generics.CreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+    queryset = User.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        """
+        Register a new User
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            token = get_session_token(cuid=serializer.data.get('cuid'), reason='activate-user')
+            # MailUtils.send_user_awaiting_activation(user=user, token=token)
+
+            user_serializer = UserSerializer(user)
+            return Response(data=user_serializer.data, status=status.HTTP_200_OK)
+            # return Response(
+            #     data='Signup successful, you will receive a validation email.', status=status.HTTP_201_CREATED
+            # )
+        else:
+            return Response(
+                data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+def get_session_token(cuid, reason, expiry=172800):
+    # Remove all expired sessions
+    SessionStore().clear_expired()
+    new_session = SessionStore()
+    new_session[reason] = cuid
+    new_session.set_expiry(expiry)  # with "timedelta(days=2)" won't work... :(
+    new_session.create()
+    return new_session.session_key
