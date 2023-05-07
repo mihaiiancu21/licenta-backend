@@ -7,19 +7,6 @@ from restapi.models import Problem
 from restapi.v1.problems.serializers.ProblemSerializers import ProblemSerializer
 
 
-# class ProblemFilterView(generics.UpdateAPIView):
-#     """
-#     Get a list of problems by applying filters
-#     """
-#     queryset = Problem.objects.all()
-#     serializer_class = ProblemSerializer
-#
-#     def update(self, request, *args, **kwargs):
-#         queryset = self.get_queryset()
-#         serializer = self.get_serializer(queryset, many=True)
-#
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-
 class ProblemView(generics.ListCreateAPIView):
     """
     Get a list of problems existing in Database or create a new problem
@@ -38,6 +25,7 @@ class ProblemView(generics.ListCreateAPIView):
         if request.query_params:
             level_filters = []
             topic_filter = []
+            filtered_problems = []
 
             if "level_filter" in request.query_params:
                 level_filters = request.query_params.get("level_filter").split(',')
@@ -47,7 +35,8 @@ class ProblemView(generics.ListCreateAPIView):
 
             if level_filters and topic_filter:
                 filtered_problems = Problem.objects.filter(
-                    Q(difficulty_level__in=level_filters) & Q(topic_type__topic__in=topic_filter)
+                    Q(difficulty_level__in=level_filters) & Q(
+                        topic_type__topic__in=topic_filter)
                 )
 
             elif level_filters:
@@ -77,8 +66,10 @@ class ProblemView(generics.ListCreateAPIView):
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
             else:
-                return Response(data="Request not allowed", status=status.HTTP_401_UNAUTHORIZED)
-        return Response(data="Problem was inserted successfully", status=status.HTTP_201_CREATED)
+                return Response(data="Request not allowed",
+                                status=status.HTTP_401_UNAUTHORIZED)
+        return Response(data="Problem was inserted successfully",
+                        status=status.HTTP_201_CREATED)
 
 
 class ProblemUpdateView(generics.RetrieveUpdateDestroyAPIView):
@@ -103,7 +94,8 @@ class ProblemUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         problem = self.get_object()
-        serializer = ProblemSerializer(instance=problem, data=request.data, partial=True, context={'request': request})
+        serializer = ProblemSerializer(instance=problem, data=request.data, partial=True,
+                                       context={'request': request})
 
         serializer.is_valid(raise_exception=True)
         serializer.save()
