@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('restapi', '0002_alter_problemtopics_topic'),
     ]
@@ -18,11 +17,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='problem',
             name='restrictions',
-            field=models.TextField(help_text='Restrictions of the problem or other mentions'),
+            field=models.TextField(
+                help_text='Restrictions of the problem or other mentions'),
         ),
         migrations.AlterField(
             model_name='problem',
             name='task_description',
-            field=models.TextField(help_text='Describe what user should do in the current problem', max_length=2048),
+            field=models.TextField(
+                help_text='Describe what user should do in the current problem',
+                max_length=2048
+            ),
         ),
     ]

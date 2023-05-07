@@ -1,5 +1,4 @@
 import base64
-import json
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -12,7 +11,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from permissions import get_permission_class
+from restapi.models import UsersRank
+from restapi.permissions import get_permission_class
 from restapi.utils.session_authentication import CsrfExemptSessionAuthentication
 from restapi.v1.auth.serializers.AuthSerializer import LoginSerializer, RegisterSerializer
 from restapi.v1.users.serializers.UserSerializer import UserSerializer
@@ -37,14 +37,18 @@ class Login(generics.CreateAPIView):
         """
 
         serializer = self.get_serializer(data=request.data)
-        # We keep an if here, because the exception is not a validation exception but an AuthenticationFailed exception
+        # We keep an if here, because the exception is not a
+        # validation exception but an AuthenticationFailed exception
 
         if serializer.is_valid():
             username = serializer.validated_data.get("username")
             password = base64.b64decode(serializer.validated_data.get("password"))
             as_standard_user = serializer.validated_data.get("as_standard_user", False)
 
-            user = authenticate(request, username=username, password=password, as_standard_user=as_standard_user)
+            user = authenticate(
+                request, username=username, password=password,
+                as_standard_user=as_standard_user
+            )
             if user is not None and user.is_active:
                 login(request, user)
                 user_serializer = UserSerializer(user)
@@ -76,14 +80,16 @@ class Register(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            token = get_session_token(cuid=serializer.data.get('cuid'), reason='activate-user')
+            token = get_session_token(
+                cuid=serializer.data.get('cuid'), reason='activate-user'
+            )
+
+            # add user automatically in Rank table
+            UsersRank.objects.create(username=user)
             # MailUtils.send_user_awaiting_activation(user=user, token=token)
 
             user_serializer = UserSerializer(user)
             return Response(data=user_serializer.data, status=status.HTTP_200_OK)
-            # return Response(
-            #     data='Signup successful, you will receive a validation email.', status=status.HTTP_201_CREATED
-            # )
         else:
             return Response(
                 data=serializer.errors, status=status.HTTP_400_BAD_REQUEST
@@ -95,6 +101,6 @@ def get_session_token(cuid, reason, expiry=172800):
     SessionStore().clear_expired()
     new_session = SessionStore()
     new_session[reason] = cuid
-    new_session.set_expiry(expiry)  # with "timedelta(days=2)" won't work... :(
+    new_session.set_expiry(expiry)
     new_session.create()
     return new_session.session_key

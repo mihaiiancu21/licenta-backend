@@ -3,6 +3,7 @@ from django.urls import path, include, re_path
 from restapi.v1.auth import views as auth_views
 from restapi.v1.problems import views as problems_views
 from restapi.v1.problems_examples import views as problem_examples_views
+from restapi.v1.rank import views as rank_views
 from restapi.v1.topics import views as topics_views
 from restapi.v1.users import views as users_views
 
@@ -16,24 +17,41 @@ auth_urlpatterns = [
 users_urlpatterns = [
     # users
     path(r'', users_views.UserViewSet.UserListView.as_view(), name="list-users"),
-    path(r'profile/', users_views.UserViewSet.UserDetailsView.as_view(), name="get-users-profile"),
+    path(
+        r'profile/', users_views.UserViewSet.UserDetailsView.as_view(),
+        name="get-users-profile"
+    ),
+    path(r'rank/', rank_views.RankViewSet.RankListView.as_view(), name="list-users-rank"),
+    re_path(
+        r'rank/(?P<search_value>[\w\-]+)/$', topics_views.TopicViewSet.TopicUpdateView.as_view(),
+        name="get-topic"
+    ),
 ]
 
 topics_urlpatterns = [
     # topics
     path(r'', topics_views.TopicViewSet.TopicsListView.as_view(), name="list-topics"),
-    re_path(r'^(?P<pk>[0-9]+)/$', topics_views.TopicViewSet.TopicUpdateView.as_view(), name="get-topic"),
+    re_path(
+        r'^(?P<pk>[0-9]+)/$', topics_views.TopicViewSet.TopicUpdateView.as_view(),
+        name="get-topic"
+    ),
 ]
 
 problems_urlpatterns = [
     # problems
     path(r'', problems_views.ProblemViewSet.ProblemView.as_view(), name="list-problems"),
-    re_path(r'^(?P<pk>[0-9]+)/$', problems_views.ProblemViewSet.ProblemUpdateView.as_view(), name="update"),
+    re_path(
+        r'^(?P<pk>[0-9]+)/$', problems_views.ProblemViewSet.ProblemUpdateView.as_view(),
+        name="update"
+    ),
 ]
 
 problemExamples_urlpatterns = [
     # problem examples
-    path(r'', problem_examples_views.ProblemExampleViewSet.ProblemExampleView.as_view(), name="list-problems"),
+    path(
+        r'', problem_examples_views.ProblemExampleViewSet.ProblemExampleView.as_view(),
+        name="list-problems"
+    ),
 ]
 
 urlpatterns = [

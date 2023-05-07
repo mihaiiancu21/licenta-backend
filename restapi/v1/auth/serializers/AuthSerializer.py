@@ -18,10 +18,6 @@ class LoginSerializer(serializers.Serializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    # username = serializers.CharField(
-    #     validators=[UniqueValidator(queryset=User.objects.all())], help_text="Username"
-    # )
-
     email = serializers.EmailField(
         max_length=255, validators=[UniqueValidator(queryset=User.objects.all())], help_text="User's email"
     )
