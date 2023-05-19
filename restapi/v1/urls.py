@@ -17,14 +17,19 @@ auth_urlpatterns = [
 users_urlpatterns = [
     # users
     path(r'', users_views.UserViewSet.UserListView.as_view(), name="list-users"),
+    re_path(
+        r'^(?P<pk>[0-9]+)/$', users_views.UserViewSet.UserUpdateView.as_view(),
+        name="get-user-by-id"
+    ),
     path(
         r'profile/', users_views.UserViewSet.UserDetailsView.as_view(),
         name="get-users-profile"
     ),
     path(r'rank/', rank_views.RankViewSet.RankListView.as_view(), name="list-users-rank"),
     re_path(
-        r'rank/(?P<search_value>[\w\-]+)/$', topics_views.TopicViewSet.TopicUpdateView.as_view(),
-        name="get-topic"
+        r'rank/(?P<search_value>[\w\-]+)/$',
+        rank_views.RankViewSet.RankRetrieveView.as_view(),
+        name="get-user-rank-by-username"
     ),
 ]
 
@@ -33,20 +38,24 @@ topics_urlpatterns = [
     path(r'', topics_views.TopicViewSet.TopicsListView.as_view(), name="list-topics"),
     re_path(
         r'^(?P<pk>[0-9]+)/$', topics_views.TopicViewSet.TopicUpdateView.as_view(),
-        name="get-topic"
+        name="get-topic-by-id"
     ),
 ]
 
 problems_urlpatterns = [
     # problems
     path(r'', problems_views.ProblemViewSet.ProblemView.as_view(), name="list-problems"),
+    path(
+        r'admin-list-problems/', problems_views.ProblemViewSet.ProblemAdminView.as_view(),
+        name="list-problems-admin"
+    ),
     re_path(
         r'^(?P<pk>[0-9]+)/$', problems_views.ProblemViewSet.ProblemUpdateView.as_view(),
         name="update"
     ),
 ]
 
-problemExamples_urlpatterns = [
+problem_examples_urlpatterns = [
     # problem examples
     path(
         r'', problem_examples_views.ProblemExampleViewSet.ProblemExampleView.as_view(),

@@ -43,7 +43,9 @@ class TopicUpdateView(generics.RetrieveUpdateDestroyAPIView):
     def update(self, request, *args, **kwargs):
         problem_topic = self.get_object()
         serializer = TopicSerializer(
-            instance=problem_topic, data=request.data, partial=True, context={'request': request}
+            instance=problem_topic,
+            data=request.data,
+            partial=True, context={'request': request}
         )
 
         serializer.is_valid(raise_exception=True)

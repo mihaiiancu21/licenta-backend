@@ -3,6 +3,9 @@ from django_fsm import FSMField
 
 
 class ProblemTopics(models.Model):
+    class Meta:
+        db_table = "restapi_problem_topics"
+
     TOPIC_ARRAY = "Arrays"
     TOPIC_STRINGS = "Strings"
     TOPIC_MATRIX = "Matrix"

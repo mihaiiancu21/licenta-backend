@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, status
 from rest_framework.exceptions import NotFound
@@ -35,7 +36,7 @@ class RankRetrieveView(generics.RetrieveAPIView):
     def retrieve(self, request, *args, **kwargs):
         try:
             user_found = UsersRank.objects.get(
-                username=kwargs.get('search_value', None), is_active=True
+                user__username=kwargs.get('search_value', None)
             )
             serializer = self.get_serializer(user_found)
             return Response(serializer.data)
