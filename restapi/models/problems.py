@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django_fsm import FSMField
 
@@ -15,18 +16,6 @@ class Problem(models.Model):
         (LEVEL_EASY, "Easy"),
         (LEVEL_MEDIUM, "Medium"),
         (LEVEL_HIGH, "High")
-    )
-
-    STATUS_SOLVED = "Solved"
-    STATUS_UNSOLVED = "Unsolved"
-    STATUS_ATTEMPTED = "Attempted"
-    STATUS_BOOKMARKED = "Bookmarked"
-
-    STATUS_CHOICES = (
-        (STATUS_SOLVED, "Solved"),
-        (STATUS_UNSOLVED, "Unsolved"),
-        (STATUS_ATTEMPTED, "Attempted"),
-        (STATUS_BOOKMARKED, "Bookmarked"),
     )
 
     topic_type = models.ForeignKey(
@@ -53,11 +42,6 @@ class Problem(models.Model):
         help_text="Level of the problem"
     )
 
-    status = FSMField(
-        default=STATUS_UNSOLVED, choices=STATUS_CHOICES,
-        help_text="Status of the problem"
-    )
-
     task_description = models.TextField(
         max_length=2048,
         help_text="Describe what user should do in the current problem",
@@ -68,4 +52,36 @@ class Problem(models.Model):
         default=100,
         help_text="How much points you can get if you solve the problem",
         null=False,
+    )
+
+
+class UsersProblemsStatus(models.Model):
+    class Meta:
+        db_table = "restapi_users_problems_status"
+
+    STATUS_SOLVED = "Solved"
+    STATUS_UNSOLVED = "Unsolved"
+    STATUS_ATTEMPTED = "Attempted"
+    STATUS_BOOKMARKED = "Bookmarked"
+
+    STATUS_CHOICES = (
+        (STATUS_SOLVED, "Solved"),
+        (STATUS_UNSOLVED, "Unsolved"),
+        (STATUS_ATTEMPTED, "Attempted"),
+        (STATUS_BOOKMARKED, "Bookmarked"),
+    )
+
+    problem = models.ForeignKey(
+        Problem, on_delete=models.CASCADE, null=False,
+        blank=False
+    )
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=False,
+        blank=False
+    )
+
+    status = FSMField(
+        default=STATUS_UNSOLVED, choices=STATUS_CHOICES,
+        help_text="Status of the problem"
     )

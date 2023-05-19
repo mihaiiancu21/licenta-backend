@@ -1,7 +1,10 @@
 from django.db import models
 
 
-class UserSubmission(models.Model):
+class UserSolutionSubmitted(models.Model):
+    class Meta:
+        db_table = "restapi_user_solution_submitted"
+
     time_submitted = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
         max_length=50, help_text="Status of the submission", null=False, blank=False

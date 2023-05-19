@@ -4,7 +4,8 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from restapi.models import Problem
-from restapi.v1.problems.serializers.ProblemSerializers import ProblemSerializer
+from restapi.v1.problems.serializers.ProblemSerializers import ProblemSerializer, \
+    ProblemFullSerializer
 
 
 class ProblemView(generics.ListCreateAPIView):
@@ -66,10 +67,14 @@ class ProblemView(generics.ListCreateAPIView):
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
             else:
-                return Response(data="Request not allowed",
-                                status=status.HTTP_401_UNAUTHORIZED)
-        return Response(data="Problem was inserted successfully",
-                        status=status.HTTP_201_CREATED)
+                return Response(
+                    data="Request not allowed",
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+        return Response(
+            data="Problem was inserted successfully",
+            status=status.HTTP_201_CREATED
+        )
 
 
 class ProblemUpdateView(generics.RetrieveUpdateDestroyAPIView):
@@ -100,3 +105,24 @@ class ProblemUpdateView(generics.RetrieveUpdateDestroyAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(data="Data updates successfully", status=status.HTTP_204_NO_CONTENT)
+
+
+class ProblemAdminView(generics.ListCreateAPIView):
+    """
+    Get a list of problems existing in Database or create a new problem
+
+    get:
+    Retrieve all problems from DataBase
+
+    post:
+    Create a new Problem object in Database
+    """
+
+    queryset = Problem.objects.all()
+    serializer_class = ProblemFullSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

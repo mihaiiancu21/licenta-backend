@@ -3,7 +3,10 @@ from django.db import models
 
 
 class UsersRank(models.Model):
-    username = models.ForeignKey(
+    class Meta:
+        db_table = "restapi_users_rank"
+
+    user = models.ForeignKey(
         User, on_delete=models.CASCADE, null=False,
         blank=False
     )
