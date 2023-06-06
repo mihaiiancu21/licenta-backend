@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, status
 from rest_framework.exceptions import NotFound

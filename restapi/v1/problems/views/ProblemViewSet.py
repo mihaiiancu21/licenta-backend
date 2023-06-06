@@ -4,8 +4,9 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from restapi.models import Problem
-from restapi.v1.problems.serializers.ProblemSerializers import ProblemSerializer, \
-    ProblemFullSerializer
+from restapi.v1.problems.serializers.ProblemSerializers import (
+    ProblemSerializer, ProblemFullSerializer
+)
 
 
 class ProblemView(generics.ListCreateAPIView):
@@ -61,9 +62,9 @@ class ProblemView(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         with transaction.atomic():
-            # todo de verificat daca linia de mai jos merge
+
             if request.user.is_superuser:
-                serializer = self.get_serializer(data=request.data)
+                serializer = ProblemFullSerializer(data=request.data)
                 serializer.is_valid(raise_exception=True)
                 serializer.save()
             else:
@@ -91,6 +92,12 @@ class ProblemUpdateView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
 
+    def get(self, request, *args, **kwargs):
+        problem = self.get_object()
+        serializer = ProblemFullSerializer(instance=problem)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def delete(self, request, *args, **kwargs):
         problem = self.get_object()
         problem.delete()
@@ -99,8 +106,10 @@ class ProblemUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
     def update(self, request, *args, **kwargs):
         problem = self.get_object()
-        serializer = ProblemSerializer(instance=problem, data=request.data, partial=True,
-                                       context={'request': request})
+        serializer = ProblemFullSerializer(
+            instance=problem, data=request.data, partial=True,
+            context={'request': request}
+        )
 
         serializer.is_valid(raise_exception=True)
         serializer.save()

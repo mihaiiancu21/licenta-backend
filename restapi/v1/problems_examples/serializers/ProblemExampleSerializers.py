@@ -10,4 +10,4 @@ class ProblemExampleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProblemExamples
-        fields = ("id", "example_description", "problem")
+        fields = ("id", "example_description")

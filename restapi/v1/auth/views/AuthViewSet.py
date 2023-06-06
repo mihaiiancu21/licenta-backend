@@ -15,7 +15,7 @@ from restapi.models import UsersRank
 from restapi.permissions import get_permission_class
 from restapi.utils.session_authentication import CsrfExemptSessionAuthentication
 from restapi.v1.auth.serializers.AuthSerializer import LoginSerializer, RegisterSerializer
-from restapi.v1.users.serializers.UserSerializer import UserSerializer
+from restapi.v1.users.serializers.UserSerializer import UserSerializer, UserFullSerializer
 
 
 @ensure_csrf_cookie
@@ -51,7 +51,7 @@ class Login(generics.CreateAPIView):
             )
             if user is not None and user.is_active:
                 login(request, user)
-                user_serializer = UserSerializer(user)
+                user_serializer = UserFullSerializer(user)
                 return Response(data=user_serializer.data, status=status.HTTP_200_OK)
         raise AuthenticationFailed()
 
