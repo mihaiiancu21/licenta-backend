@@ -110,3 +110,4 @@ venv.bak/
 
 # ansible
 *.retry
+/solutions/

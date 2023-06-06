@@ -23,6 +23,11 @@ class Problem(models.Model):
         blank=False
     )
 
+    problem_example = models.ForeignKey(
+        'restapi.ProblemExamples', on_delete=models.CASCADE,
+        null=False, blank=False, default=1
+    )
+
     title = models.CharField(
         max_length=250, help_text="Title of the problem", null=False,
         blank=False
@@ -52,6 +57,13 @@ class Problem(models.Model):
         default=100,
         help_text="How much points you can get if you solve the problem",
         null=False,
+    )
+
+    code_snapshot = models.TextField(
+        max_length=2048,
+        help_text="Code snapshot which will help user to start coding",
+        blank=True,
+        default='No_code_provided'
     )
 
 
