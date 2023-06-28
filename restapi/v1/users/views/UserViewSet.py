@@ -6,7 +6,9 @@ from rest_framework.response import Response
 from restapi.models import UsersRank
 from restapi.permissions import get_permission_class
 from restapi.v1.rank.serializers.RankSerializer import UserRankFullSerializer
-from restapi.v1.users.serializers.UserSerializer import UserSerializer
+from restapi.v1.users.serializers.UserSerializer import (
+    UserSerializer, ChangePasswordSerializer
+)
 
 
 class UserListView(generics.ListAPIView):
@@ -72,3 +74,29 @@ class UserUpdateView(generics.RetrieveUpdateDestroyAPIView):
         return Response(
             data="Data updates successfully", status=status.HTTP_204_NO_CONTENT
         )
+
+
+class ChangePassword(generics.CreateAPIView):
+    """
+    post:
+    Update the current user's password
+    """
+    serializer_class = ChangePasswordSerializer
+    permission_classes = get_permission_class(default=IsAuthenticated, )
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        target_user = self.request.user
+
+        # Check old password
+        if not target_user.check_password(serializer.data.get("old_password")):
+            return Response(data="invalid_password", status=status.HTTP_400_BAD_REQUEST)
+
+        # set_password also hashes the password that the user will get
+        new_password = serializer.data.get("new_password")
+        target_user.set_password(new_password)
+        target_user.save()
+
+        return Response(data="Password changed", status=status.HTTP_204_NO_CONTENT)

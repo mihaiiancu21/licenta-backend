@@ -19,9 +19,11 @@ class LoginSerializer(serializers.Serializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(
-        max_length=255, validators=[UniqueValidator(queryset=User.objects.all())], help_text="User's email"
+        max_length=255, validators=[UniqueValidator(queryset=User.objects.all())],
+        help_text="User's email"
     )
-    password = serializers.CharField(required=True, min_length=8, help_text="User's password")
+    password = serializers.CharField(required=True, min_length=8,
+                                     help_text="User's password")
     first_name = serializers.CharField(required=True, max_length=30, allow_blank=True)
     last_name = serializers.CharField(required=True, max_length=150, allow_blank=True)
 
@@ -42,3 +44,20 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    username = serializers.CharField(
+        required=True,
+        help_text="User's username"
+    )
+
+    email = serializers.CharField(
+        required=True,
+        help_text="User's email"
+    )
+
+    new_password = serializers.CharField(
+        required=True, min_length=8,
+        help_text="User's new password"
+    )

@@ -1,8 +1,19 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django_fsm import FSMField
 
 
 class UserSolutionSubmitted(models.Model):
+    STATUS_SOLVED = "Solved"
+    STATUS_UNSOLVED = "Unsolved"
+    STATUS_ATTEMPTED = "Attempted"
+
+    STATUS_CHOICES = (
+        (STATUS_SOLVED, "Solved"),
+        (STATUS_UNSOLVED, "Unsolved"),
+        (STATUS_ATTEMPTED, "Attempted"),
+    )
+
     class Meta:
         db_table = "restapi_user_solution_submitted"
 
@@ -18,8 +29,9 @@ class UserSolutionSubmitted(models.Model):
 
     time_submitted = models.DateTimeField(auto_now_add=True)
 
-    status = models.CharField(
-        max_length=50, help_text="Status of the submission", null=False, blank=False
+    status = FSMField(
+        default=STATUS_UNSOLVED, choices=STATUS_CHOICES,
+        help_text="Status of the submission"
     )
 
     lang = models.CharField(
@@ -27,13 +39,13 @@ class UserSolutionSubmitted(models.Model):
     )
 
     test_cases = models.CharField(
-        max_length=20, help_text="Test cases passed", null=False, blank=False
+        max_length=100, help_text="Test cases passed", null=False, blank=False
     )
 
     code_submitted = models.TextField(
         help_text="Code submitted", null=False, blank=False
     )
 
-    points = models.IntegerField(
+    points = models.FloatField(
         null=False, blank=False, default=0, help_text="Total points obtained"
     )
