@@ -38,7 +38,6 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('example_description', models.CharField(help_text='Examples for problems', max_length=2048)),
-                ('problem', models.ForeignKey(help_text='Give an example for current problem', on_delete=django.db.models.deletion.CASCADE, to='restapi.problem')),
             ],
         ),
         migrations.AddField(

@@ -31,14 +31,25 @@ class PythonCompiler:
         self.__generate_solution_file()
 
     def __generate_user_dir(self) -> None:
+        """
+        This method is responsible to ensure that each use has his proper test space.
+        Its generates a folder for each user
+        """
         if not os.path.exists(self.user_dir):
             os.mkdir(self.user_dir)
 
     def __generate_problem_dir(self) -> None:
+        """
+        This method is responsible to generate a problem id folder in user's test space
+        """
         if not os.path.exists(self.problem_dir):
             os.mkdir(self.problem_dir)
 
     def __generate_solution_file(self) -> None:
+        """
+        This method generates and save the current solution that user submitted.
+        If user submits a new version of the solution, this file gets overwritten
+        """
 
         tmp_file = os.path.join(self.problem_dir, self.solution_file)
 
@@ -71,17 +82,21 @@ class PythonCompiler:
 
             expected = unittest_module.get_expected_outputs()
 
-            test_cases_count = len(test_cases)
             passed_test_cases = 0
             all_test_cases = {}
+
+            method_to_test_expected = test_cases["method_to_test"]
+            test_cases = test_cases["test_cases"]
+            test_cases_count = len(test_cases)
 
             for label in test_cases.keys():
 
                 # import the class solution and try to execute the code
                 obj_solution = solution_module.Solution()
 
-                # call the solution method
-                code_result = obj_solution.seriesSum(test_cases[label])
+                # call the solution method dynamically
+                _method_obj = getattr(obj_solution, method_to_test_expected)
+                code_result = _method_obj(*test_cases[label])
 
                 if code_result == expected[label]:
                     passed_test_cases += 1

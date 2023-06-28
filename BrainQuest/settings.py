@@ -25,7 +25,7 @@ SOLUTIONS_DIR = os.path.join(BASE_DIR, "solutions")
 SECRET_KEY = 'django-insecure-q91^azhbnj626jvce9wjeb6@jw@1a@nki_907)$i0ls*_)(8b7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 print(f'Allowed hosts: {ALLOWED_HOSTS}')
@@ -194,10 +194,13 @@ REST_FRAMEWORK = {
 }
 
 # ---------- EMAIL HANDLING ---------- #
-FROM_EMAIL_PORTAL = 'brainquest.application@gmail.com'
+FROM_EMAIL_PORTAL = 'mihaialex380@yahoo.com'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # 'smtp.mail.yahoo.com'
+EMAIL_HOST = 'smtp.mail.yahoo.com'
 EMAIL_USE_TLS = True
-EMAIL_PORT = 587
+EMAIL_PORT = 465  # 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASS', None)
+
+# ---------- CHAT GPT API SETTINGS ---------- #
+CHAT_GPT_API_KEY = os.environ.get('CHAT_GPT_API_KEY', None)

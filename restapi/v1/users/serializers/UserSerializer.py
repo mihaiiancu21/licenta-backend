@@ -18,3 +18,14 @@ class UserFullSerializer(UserSerializer):
         model = UserSerializer.Meta.model
         fields = UserSerializer.Meta.fields + ('is_active', 'date_joined',)
         read_only_fields = UserSerializer.Meta.read_only_fields + ('date_joined',)
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True, help_text="User's old password")
+    new_password = serializers.CharField(
+        required=True, min_length=8,
+        help_text="User's new password"
+    )

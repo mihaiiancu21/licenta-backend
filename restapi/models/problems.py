@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 from django_fsm import FSMField
 
@@ -64,36 +63,4 @@ class Problem(models.Model):
         help_text="Code snapshot which will help user to start coding",
         blank=True,
         default='No_code_provided'
-    )
-
-
-class UsersProblemsStatus(models.Model):
-    class Meta:
-        db_table = "restapi_users_problems_status"
-
-    STATUS_SOLVED = "Solved"
-    STATUS_UNSOLVED = "Unsolved"
-    STATUS_ATTEMPTED = "Attempted"
-    STATUS_BOOKMARKED = "Bookmarked"
-
-    STATUS_CHOICES = (
-        (STATUS_SOLVED, "Solved"),
-        (STATUS_UNSOLVED, "Unsolved"),
-        (STATUS_ATTEMPTED, "Attempted"),
-        (STATUS_BOOKMARKED, "Bookmarked"),
-    )
-
-    problem = models.ForeignKey(
-        Problem, on_delete=models.CASCADE, null=False,
-        blank=False
-    )
-
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, null=False,
-        blank=False
-    )
-
-    status = FSMField(
-        default=STATUS_UNSOLVED, choices=STATUS_CHOICES,
-        help_text="Status of the problem"
     )
